@@ -1,35 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import SimulationCard from "@/components/dashboard/SimulationCard";
+import CompareCard from "@/components/dashboard/CompareCard";
+import LossHarvestingCard from "@/components/dashboard/LossHarvestingCard";
+import HarvestPlanCard from "@/components/dashboard/HarvestPlanCard";
+import SyncSection from "@/components/dashboard/SyncSection";
 
-export default function Dashboard(){
-    const [loading, setLoading] = useState(false)
+export default function Dashboard() {
+  return (
+    <div className="p-6 bg-black min-h-screen text-white">
 
-    const syncBinance = async () => {
-        setLoading(true)
+      <h1 className="text-3xl font-bold mb-6">
+        🚀 Trader OS Dashboard
+      </h1>
 
-        await fetch("/api/binance/trades", {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                apiKey:"qlM5QRf7UwgSntqJvc4YiK6us6waYJ3pIfygz5TQjNuYgdyt7WhpjGysWLtqJoxC",
-                secret:"PXTm09KlyRYC63iMToLhbdaOh7PTo8vZ8DbraSJ1LzGee7q7hEKhgpDMDggvtT03"
-            })
-        })
+      <SyncSection />
 
-        setLoading(false)
-        alert("SYNC Completed")
-    }
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <SimulationCard />
+        <CompareCard />
+        <LossHarvestingCard />
+        <HarvestPlanCard />
+      </div>
 
-    return(
-        <div>
-            <h1>Dashboard</h1>
-
-            <button onClick={syncBinance}>
-                {loading?"Syncing...":"Sync Binance"}
-            </button>
-        </div>
-    )
+    </div>
+  );
 }

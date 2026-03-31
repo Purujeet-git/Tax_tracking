@@ -1,0 +1,9 @@
+{
+  "asset": "BTC",
+  "quantity": 0.025,
+  "taxSaved": 15432.5,
+  "loss": 52000,
+  "confidence": "High",
+  "impact": "High",
+  "reason": "Offsets significant short-term gains"
+}

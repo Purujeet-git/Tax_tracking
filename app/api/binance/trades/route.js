@@ -36,10 +36,10 @@ const rawTrades = result.trades;
         const symbolMap = await fetchExchangeSymbolMap();
         const normalized = normalizeTrades(rawTrades,symbolMap);
 
-        console.log("Sample normalized trades:",normalized[0]);
+        // console.log("Sample normalized trades:",normalized[0]);
 
         const ethbtcTrade = normalized.find(t => t.symbol === "ETHBTC");
-        console.log("ETHBTC normalized:",ethbtcTrade)
+        // console.log("ETHBTC normalized:",ethbtcTrade)
         const inserted = await insertTransactions({
             userId:session.user.id,
             trades:normalized

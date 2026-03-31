@@ -1,0 +1,31 @@
+{
+  "opportunities": [
+    {
+      "asset": "BTC",
+      "lotId": "1",
+      "quantity": 0.005,
+      "costPerUnit": 70500,
+      "currentPrice": 66000,
+      "totalLoss": 225,
+      "estimatedTaxSaving": 67.5
+    },
+    {
+      "asset": "BTC",
+      "lotId": "2",
+      "quantity": 0.01,
+      "costPerUnit": 70000,
+      "currentPrice": 66000,
+      "totalLoss": 400,
+      "estimatedTaxSaving": 120
+    },
+    {
+      "asset": "ETH",
+      "lotId": "3",
+      "quantity": 0.5,
+      "costPerUnit": 2200,
+      "currentPrice": 2000,
+      "totalLoss": 100,
+      "estimatedTaxSaving": 30
+    }
+  ]
+}   

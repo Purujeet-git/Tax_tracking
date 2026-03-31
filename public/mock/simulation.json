@@ -1,0 +1,8 @@
+{
+  "simulation": {
+    "totalGain": -24329.97,
+    "shortTermGain": -18000,
+    "longTermGain": -6329.97,
+    "taxImpact": -7298.99
+  }
+}

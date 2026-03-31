@@ -12,36 +12,48 @@ import {
   SelectItem
 } from "@/components/ui/select";
 
-export default function SimulationCard() {
-  const [asset, setAsset] = useState("BTC");
-  const [quantity, setQuantity] = useState("");
+export default function SimulationCard({
+  asset,
+  setAsset,
+  quantity,
+  setQuantity
+}) {
   const [strategy, setStrategy] = useState("FIFO");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const simulateSell = async () => {
+  const simulate = async () => {
+    if (!quantity) return alert("Enter quantity");
+
+    setLoading(true);
+
     const res = await fetch("/api/simulate/sell", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         asset,
         quantity: Number(quantity),
         strategy
-      }),
-      headers: { "Content-Type": "application/json" }
+      })
     });
 
     const data = await res.json();
     setResult(data.simulation);
+
+    setLoading(false);
   };
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800">
+    <Card className="bg-zinc-900 text-white border-zinc-800">
       <CardContent className="p-4 space-y-4">
 
         <h2 className="text-xl font-semibold">Sell Simulation</h2>
 
-        <Select onValueChange={setAsset} defaultValue="BTC">
+        <Select value={asset} onValueChange={setAsset}>
           <SelectTrigger>
-            <SelectValue placeholder="Select Asset" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="BTC">BTC</SelectItem>
@@ -51,14 +63,13 @@ export default function SimulationCard() {
 
         <Input
           placeholder="Enter Quantity"
-          type="number"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
         />
 
-        <Select onValueChange={setStrategy} defaultValue="FIFO">
+        <Select value={strategy} onValueChange={setStrategy}>
           <SelectTrigger>
-            <SelectValue placeholder="Strategy" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="FIFO">FIFO</SelectItem>
@@ -67,8 +78,8 @@ export default function SimulationCard() {
           </SelectContent>
         </Select>
 
-        <Button onClick={simulateSell}>
-          Simulate Sell
+        <Button onClick={simulate}>
+          {loading ? "Simulating..." : "Simulate Sell"}
         </Button>
 
         {result && (

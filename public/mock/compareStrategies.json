@@ -1,0 +1,27 @@
+{
+  "bestStrategy": "FIFO",
+  "saved": 1250,
+  "strategies": [
+    {
+      "name": "FIFO",
+      "gain": -24500,
+      "shortTerm": -20000,
+      "longTerm": -4500,
+      "taxSaved": 1250
+    },
+    {
+      "name": "LIFO",
+      "gain": -22000,
+      "shortTerm": -18000,
+      "longTerm": -4000,
+      "taxSaved": 1000
+    },
+    {
+      "name": "HIFO",
+      "gain": -26000,
+      "shortTerm": -21000,
+      "longTerm": -5000,
+      "taxSaved": 1400
+    }
+  ]
+}

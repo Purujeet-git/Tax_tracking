@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "totalTaxSaved": 25432.75,
+    "actionCount": 4
+  },
+  "actions": [
+    {
+      "asset": "BTC",
+      "quantity": 0.015,
+      "taxSaved": 12450.5,
+      "loss": 41500.75,
+      "reason": "Offsets short-term gains"
+    },
+    {
+      "asset": "ETH",
+      "quantity": 0.8,
+      "taxSaved": 8450.25,
+      "loss": 28000.5,
+      "reason": "Loss harvesting opportunity"
+    },
+    {
+      "asset": "SOL",
+      "quantity": 10,
+      "taxSaved": 3200,
+      "loss": 10500,
+      "reason": "Portfolio rebalancing"
+    },
+    {
+      "asset": "MATIC",
+      "quantity": 500,
+      "taxSaved": 1332,
+      "loss": 4400,
+      "reason": "Low-value cleanup"
+    }
+  ]
+}

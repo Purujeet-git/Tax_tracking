@@ -4,22 +4,24 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import { buildHarvestPlan } from "@/lib/taxEngine/intelligence/harvestPlan";
 
-export async function GET(){
+export async function GET() {
     await connectDB();
 
     const session = await getServerSession(authOptions);
 
-    if(!session){
+    if (!session) {
         return NextResponse.json(
-            { error : "Unauthorized" },
-            { status : 401 }
+            { error: "Unauthorized" },
+            { status: 401 }
         );
     }
 
-    const data = await buildHarvestPlan(session.user.id);
+    const userId = session.user.id; // ✅ FIX
+
+    const plan = await buildHarvestPlan(userId);
 
     return NextResponse.json({
-        success:true,
-        plan:data
+        success: true,
+        plan, // structured data
     });
 }

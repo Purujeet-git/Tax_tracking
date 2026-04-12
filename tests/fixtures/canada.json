@@ -1,0 +1,14 @@
+{
+  "country": "CANADA",
+  "strategy": "ACB",
+  "currency": "USD",
+  "totalGain": 12543.66666667,
+  "taxableCapitalGain": 6271.83333334,
+  "shortTermGain": 0,
+  "longTermGain": 0,
+  "specialGain": 12543.66666667,
+  "disposalCount": 3,
+  "totalProceeds": 81440,
+  "totalCost": 68896.33333333,
+  "exportedCsvHash": "7edae6557ef212f128c46cc70857293654f191b1f9763d6ce4d311ffa430c5f2"
+}

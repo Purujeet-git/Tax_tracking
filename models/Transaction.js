@@ -63,6 +63,20 @@ const TransactionSchema = new mongoose.Schema(
             type:String,
             index:true
         },
+        assetClass:{
+            type:String,
+            enum:["CRYPTO","STOCK"],
+            default:"CRYPTO",
+            index:true,
+        },
+        broker:{
+            type:String,
+            index:true,
+        },
+        country:{
+            type:String,
+            index:true,
+        },
         orderId:String,
         timestamp:{
             type:Date,

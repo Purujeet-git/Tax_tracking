@@ -2,87 +2,76 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { connectDB } from "@/lib/db";
-import Trade from "@/models/Trade";
-import { matchDisposals } from "@/lib/taxEngine/disposals/matchDisposals";
-import { summarizeDisposals } from "@/lib/taxEngine/disposals/summarizeDisposals";
+import Disposal from "@/models/Disposal";
 import { getLossHarvsetingOpportunities } from "@/lib/taxEngine/intelligence/lossHarvesting";
 
-export async function GET() {
-    try {
+export async function GET(){
+    try{
         await connectDB();
 
         const session = await getServerSession(authOptions);
 
-        if (!session) {
+        if(!session){
             return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
+                {error:"Unauthorized"},
+                {status:401}
             );
         }
 
         const userId = session.user.id;
 
-        // ✅ Always sort by date
-        const trades = await Trade.find({ userId }).sort({
-            date: 1,
-        });
+        const disposals = await Disposal.find({userId});
 
-        const strategies = ["FIFO", "LIFO", "HIFO"];
+        const strategyTotals = {};
+        let realizedGain = 0;
+        let disposalCount = disposals.length;
 
-        const comparisons = strategies.map((strategy) => {
-            const disposals = matchDisposals(
-                trades,
-                strategy
-            );
+        for(const d of disposals){
+            realizedGain += d.gainLoss || 0;
 
-            const summary = summarizeDisposals(disposals);
+            const strategy = d.strategyUsed || "FIFO";
 
-            return {
-                strategy,
-                totalGain: summary.totalGain,
-                disposalCount: summary.disposalCount,
-            };
-        });
+            if(!strategyTotals[strategy]){
+                strategyTotals[strategy] = 0;
+            }
+            strategyTotals[strategy] += d.gainLoss || 0;
+        }
 
-        const sorted = [...comparisons].sort(
-            (a, b) => a.totalGain - b.totalGain
+        const sortedStrategies = Object.entries(strategyTotals).sort(
+            (a,b) => a[1] - b[1]
         );
 
-        // ✅ Safe fallback
-        const best = sorted[0] || {
-            strategy: "FIFO",
-            totalGain: 0,
-            disposalCount: 0,
-        };
+        const bestStrategy =
+            sortedStrategies.length > 0
+                ? sortedStrategies[0][0]
+                : "FIFO";
 
-        // ✅ Prevent negative tax
-        const estimatedTax =
-            Math.max(best.totalGain, 0) * 0.3;
+        const estimatedTax = Math.max(realizedGain,0)*0.3;
 
-        const harvest =
-            await getLossHarvsetingOpportunities(userId);
+        const harvest = await getLossHarvsetingOpportunities(userId);
 
-        const potentialSaving = harvest.reduce(
-            (sum, h) => sum + h.estimatedTaxSaving,
+        const potentialHarvestSaving = harvest.reduce(
+            (sum,h) => sum + (h.estimatedTaxSaving || 0),
             0
         );
-        console.log("This is potential",potentialSaving);
 
         return NextResponse.json({
-            success: true,
-            taxYear: "FY 2025-26",
-            realizedGain: best.totalGain,
-            estimatedTax,
-            disposalCount: best.disposalCount,
-            bestStrategy: best.strategy,
-            potentialHarvestSaving: potentialSaving,
+            success:true,
+            taxYear:"FY 2025-26",
+            realizedGain:Number(realizedGain.toFixed(2)),
+            estimatedTax:Number(estimatedTax.toFixed(2)),
+            disposalCount,
+            bestStrategy,
+            potentialHarvestSaving:Number(
+                potentialHarvestSaving.toFixed(2)
+            )
         });
-    } catch (error) {
-        console.error("YEAR SUMMARY ERROR:", error);
+    }catch(error){
+        console.error("YEAR SUMMARY ERROR:",error);
 
         return NextResponse.json(
-            { error: "Failed to generate year summary" },
-            { status: 500 }
+            {error:"Failed to generate year summary"},
+            {status:500}
         );
     }
-}   
+}

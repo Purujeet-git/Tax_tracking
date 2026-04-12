@@ -1,0 +1,30 @@
+{
+  "country": "UK",
+  "strategy": "UK_SECTION_104",
+  "currency": "USD",
+  "totalGain": 12543.66666667,
+  "shortTermGain": 0,
+  "longTermGain": 0,
+  "specialGain": 12543.66666667,
+  "disposalCount": 3,
+  "totalProceeds": 81440,
+  "totalCost": 68896.33333333,
+  "lotMatches": [
+    {
+      "asset": "BTC",
+      "quantitySold": 0.8,
+      "taxCategory": "SECTION_104"
+    },
+    {
+      "asset": "ETH",
+      "quantitySold": 4,
+      "taxCategory": "SECTION_104"
+    },
+    {
+      "asset": "BTC",
+      "quantitySold": 0.3,
+      "taxCategory": "SECTION_104"
+    }
+  ],
+  "exportedCsvHash": "7d8500a9ed430d0f85e37d5d1680078763c1f919f9894c38bb66a90640f6a351"
+}

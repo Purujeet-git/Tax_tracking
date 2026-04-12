@@ -1,0 +1,13 @@
+{
+  "country": "INDIA",
+  "strategy": "FIFO",
+  "currency": "USD",
+  "totalGain": 13877,
+  "shortTermGain": 13877,
+  "longTermGain": 0,
+  "taxableIncomeVDA": 13877,
+  "disposalCount": 3,
+  "totalProceeds": 81440,
+  "totalCost": 67563,
+  "exportedCsvHash": "6db544ae391243de5a4fc2a49206aa337231c7f28830ba1d969f1788d12730f2"
+}

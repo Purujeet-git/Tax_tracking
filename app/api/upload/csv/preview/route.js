@@ -6,80 +6,115 @@ import { authOptions } from "../../../auth/[...nextauth]/route";
 // reuse same helpers later from shared file
 function detectFormat(headers) {
     if (headers.includes("symbol") && headers.includes("side")) {
-        return "binance";
+        return "BINANCE";
     }
 
     if (headers.includes("tradingsymbol")) {
-        return "zerodha";
+        return "ZERODHA";
     }
 
-    return "unknown";
+    return "UNKNOWN";
 }
 
 function parseBinance(records) {
-    return records.map((r) => ({
-        asset: r.symbol.replace("USDT", ""),
-        symbol: r.symbol,
-        quantity: Number(r.quantity),
-        price: Number(r.price),
-        type: r.side?.toUpperCase(),
-        date: new Date(r.date),
-    }));
+    return records.map((r) => {
+        const symbol = r.symbol;
+        const baseAsset = symbol.replace("USDT","");
+        const quoteAsset = symbol.endsWith("USDT")
+            ?"USDT"
+            :null;
+        
+        return {
+            exchange:"BINANCE",
+            symbol,
+            baseAsset,
+            quoteAsset,
+            side:r.side?.toUpperCase(),
+            quantity:Number(r.quantity),
+            price:Number(r.price),
+            timestamp:new Date(r.date),
+            type:"TRADE",
+        };
+    });
 }
 
 function parseZerodha(records) {
     return records.map((r) => ({
-        asset: r.tradingsymbol,
+        exchange:"ZERODHA",
         symbol: r.tradingsymbol,
+        baseAsset:r.tradingsymbol,
+        quoteAsset:"INR",
+        side:r.transaction_type?.toUpperCase(),
         quantity: Number(r.quantity),
         price: Number(r.price),
-        type: r.transaction_type?.toUpperCase(),
-        date: new Date(r.order_timestamp),
+        timestamp:new Date(r.order_timestamp),
+        type:"TRADE",
     }));
 }
 
 export async function POST(req) {
-    const session = await getServerSession(authOptions);
+    try{
+        const session = await getServerSession(authOptions);
 
-    if (!session) {
+        if(!session){
+            return NextResponse.json(
+                {error:"Unauthorized"},
+                {status:401}
+            );
+        }
+        const formData = await req.formData();
+        const file = formData.get("file");
+
+        if(!file){
+            return NextResponse.json(
+                {error:"No file uploaded"},
+                {status:400}
+            );
+        }
+
+        const text = await file.text();
+
+        const records = parse(text, {
+            columns:true,
+            skip_empty_lines:true,
+        });
+
+        if(!records.length){
+            return NextResponse.json(
+                {error:"CSV is empty"},
+                {status:400}
+            );
+        }
+
+        const headers = Object.keys(records[0]);
+        const format = detectFormat(headers);
+
+        let preview = [];
+
+        if(format === "BINANCE"){
+            preview = parseBinance(records);
+        }else if(format === "ZERODHA"){
+            preview = parseZerodha(records);
+        }else{
+            return NextResponse.json(
+                {error:"Unsupported CSV format"},
+                {status:400}
+            );
+        }
+
+        return NextResponse.json({
+            success:true,
+            exchange:format,
+            preview:preview.slice(0,20),
+            totalRows:preview.length,
+            schema:"TRANSACTION",
+        });
+    }catch(error){
+        console.error("CSV PREVIEW ERROR:",error);
+
         return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
+            {error:"Failed to preview CSV"},
+            {status:500}
         );
     }
-
-    const formData = await req.formData();
-    const file = formData.get("file");
-
-    if (!file) {
-        return NextResponse.json(
-            { error: "No file uploaded" },
-            { status: 400 }
-        );
-    }
-
-    const text = await file.text();
-
-    const records = parse(text, {
-        columns: true,
-        skip_empty_lines: true,
-    });
-
-    const headers = Object.keys(records[0]);
-    const format = detectFormat(headers);
-
-    let preview = [];
-
-    if (format === "binance") {
-        preview = parseBinance(records);
-    } else if (format === "zerodha") {
-        preview = parseZerodha(records);
-    }
-
-    return NextResponse.json({
-        success: true,
-        exchange: format,
-        preview: preview.slice(0, 20), // show only first 20
-        totalRows: preview.length,
-    });
 }

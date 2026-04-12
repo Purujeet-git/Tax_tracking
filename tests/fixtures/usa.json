@@ -1,0 +1,38 @@
+{
+  "country": "USA",
+  "strategy": "FIFO",
+  "currency": "USD",
+  "totalGain": 13877,
+  "shortTermGain": 13877,
+  "longTermGain": 0,
+  "disposalCount": 3,
+  "totalProceeds": 81440,
+  "totalCost": 67563,
+  "lotMatches": [
+    {
+      "asset": "BTC",
+      "quantitySold": 0.8,
+      "proceeds": 47970,
+      "totalCost": 40040,
+      "gainLoss": 7930,
+      "taxCategory": "SHORT_TERM"
+    },
+    {
+      "asset": "ETH",
+      "quantitySold": 4,
+      "proceeds": 13990,
+      "totalCost": 12008,
+      "gainLoss": 1982,
+      "taxCategory": "SHORT_TERM"
+    },
+    {
+      "asset": "BTC",
+      "quantitySold": 0.3,
+      "proceeds": 19480,
+      "totalCost": 15515,
+      "gainLoss": 3965,
+      "taxCategory": "SHORT_TERM"
+    }
+  ],
+  "exportedCsvHash": "6db544ae391243de5a4fc2a49206aa337231c7f28830ba1d969f1788d12730f2"
+}

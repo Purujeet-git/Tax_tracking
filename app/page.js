@@ -1,264 +1,254 @@
-import Link from 'next/link'
+import Link from "next/link";
+import Image from "next/image";
+import AdaptiveAuthButton from "@/components/landing/AdaptiveAuthButton";
+
+const chains = [
+  "Binance",
+  "Coinbase",
+  "Kraken",
+  "WazirX",
+  "KuCoin",
+  "Bybit",
+  "Gemini",
+  "CoinDCX",
+  "CoinSpot",
+  "Luno",
+  "Newton",
+  "Crypto.com",
+];
+
+const stats = [
+  ["12+", "exchange formats"],
+  ["5", "tax regimes"],
+  ["FIFO", "HIFO, LIFO, ACB"],
+];
+
+const features = [
+  {
+    title: "One ledger for every trade",
+    text: "Import exchange CSVs, normalize messy fills, and rebuild your cost basis without stitching spreadsheets together.",
+  },
+  {
+    title: "Tax moves before year end",
+    text: "See harvest candidates, strategy comparisons, and projected gains while there is still time to act.",
+  },
+  {
+    title: "Filing exports ready",
+    text: "Generate country-specific reports and downloadable tax files from the same transaction history.",
+  },
+];
+
+const faq = [
+  [
+    "Can I import trades from multiple exchanges?",
+    "Yes. Trader OS is built around normalized imports, so each source lands in one consistent tax ledger.",
+  ],
+  [
+    "Does it only support one tax method?",
+    "No. You can compare FIFO, HIFO, LIFO, ACB, and specific-identification style strategies where supported.",
+  ],
+  [
+    "Is this meant for active traders?",
+    "Yes. The product is designed for high-volume crypto activity where tax lots, disposals, and unrealized PnL need constant attention.",
+  ],
+];
+
+function MiniChart() {
+  return (
+    <div className="grid h-28 grid-cols-12 items-end gap-1.5">
+      {[42, 62, 48, 74, 58, 82, 66, 88, 72, 96, 84, 104].map((height, index) => (
+        <div
+          key={index}
+          className="rounded-t bg-black"
+          style={{ height: `${height}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ProductMockup() {
+  return (
+    <div className="relative mx-auto w-full max-w-5xl">
+      <div className="absolute -left-8 top-12 hidden h-28 w-28 rotate-[-10deg] items-center justify-center rounded-lg border-2 border-black bg-[#ffdf5d] text-center text-sm font-black uppercase md:flex">
+        Loss
+        <br />
+        alert
+      </div>
+      <div className="absolute -right-6 bottom-16 hidden h-24 w-32 rotate-[8deg] items-center justify-center rounded-lg border-2 border-black bg-[#74e0ff] text-center text-sm font-black uppercase md:flex">
+        FIFO
+        <br />
+        ready
+      </div>
+      <div className="overflow-hidden rounded-lg border-2 border-black bg-white shadow-[12px_12px_0_#111]">
+        <div className="flex items-center justify-between border-b-2 border-black bg-[#f4f4f0] px-4 py-3">
+          <div className="flex gap-2">
+            <span className="h-3 w-3 rounded-full bg-[#ff5c5c]" />
+            <span className="h-3 w-3 rounded-full bg-[#ffcf5c]" />
+            <span className="h-3 w-3 rounded-full bg-[#35c96e]" />
+          </div>
+          <p className="text-xs font-black uppercase tracking-[0.18em]">Trader OS console</p>
+        </div>
+        <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="border-b-2 border-black p-5 lg:border-b-0 lg:border-r-2">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase text-zinc-500">Projected 2026 tax</p>
+                <h3 className="mt-1 text-4xl font-black tracking-tighter text-black">$18,420</h3>
+              </div>
+              <span className="rounded-full bg-[#9dff7a] px-4 py-2 text-sm font-black text-black">
+                -24.8%
+              </span>
+            </div>
+            <MiniChart />
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              {["Realized", "Harvest", "Unrealized"].map((label, index) => (
+                <div key={label} className="rounded-md border-2 border-black p-3">
+                  <p className="text-xs font-black uppercase text-zinc-500">{label}</p>
+                  <p className="mt-2 text-lg font-black">
+                    {["$42.1k", "$8.6k", "$19.4k"][index]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="p-5">
+            <p className="mb-4 text-sm font-black uppercase text-zinc-500">Next best actions</p>
+            {[
+              ["Sell SOL lot", "Harvest $1,840 loss"],
+              ["Hold BTC lot", "Wash window active"],
+              ["Export Form 8949", "428 disposals ready"],
+            ].map(([title, text]) => (
+              <div key={title} className="mb-3 rounded-md border-2 border-black bg-white p-4">
+                <p className="font-black">{title}</p>
+                <p className="text-sm font-semibold text-zinc-500">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Navigation */}
-      <nav className="border-b bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
-                CryptoTax
+    <div className="min-h-screen overflow-x-hidden bg-white text-black">
+      
+      <main>
+        <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid min-h-[calc(100vh-120px)] items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+              <div>
+                <p className="mb-6 inline-flex rounded-full border-2 border-black bg-[#9dff7a] px-4 py-2 text-sm font-black uppercase">
+                  Crypto tax control center
+                </p>
+                <h1 className="text-[4.5rem] font-black leading-[0.82] tracking-tighter sm:text-[7rem] lg:text-[9rem]">
+                  Take
+                  <br />
+                  Ctrl
+                  <span className="inline-block">.</span>
+                </h1>
+                <p className="mt-8 max-w-xl text-xl font-bold leading-tight text-zinc-700 sm:text-2xl">
+                  Optimize every trade, minimize every tax, and keep every exchange in one clean portfolio ledger.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/login"
+                    className="inline-flex h-14 items-center justify-center rounded-full bg-black px-7 text-base font-black text-white transition hover:bg-zinc-800"
+                  >
+                    Start tracking
+                  </Link>
+                  <Link
+                    href="/dashboard/tax-tools"
+                    className="inline-flex h-14 items-center justify-center rounded-full border-2 border-black px-7 text-base font-black text-black transition hover:bg-[#ffdf5d]"
+                  >
+                    Compare strategies
+                  </Link>
+                </div>
+              </div>
+              <div className="relative">
+                <ProductMockup />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-y-2 border-black bg-black py-4 text-white">
+          <div className="flex min-w-max animate-[marquee_28s_linear_infinite] gap-4 whitespace-nowrap px-4">
+            {[...chains, ...chains].map((chain, index) => (
+              <span key={`${chain}-${index}`} className="rounded-full border border-white/30 px-5 py-2 text-sm font-black uppercase">
+                {chain}
               </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-[#f4f4f0] px-4 py-24 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+              <div>
+                <p className="text-sm font-black uppercase text-zinc-500">One tax brain</p>
+                <h2 className="mt-4 max-w-2xl text-5xl font-black leading-none tracking-tighter sm:text-7xl">
+                  Every lot. Every disposal. Every country.
+                </h2>
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {stats.map(([value, label]) => (
+                  <div key={label} className="rounded-lg border-2 border-black bg-white p-5 shadow-[6px_6px_0_#111]">
+                    <p className="text-4xl font-black tracking-tighter">{value}</p>
+                    <p className="mt-3 text-sm font-black uppercase text-zinc-500">{label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 font-medium">
-                Login
-              </Link>
-              <Link href="/dashboard" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition">
-                Get Started Free
-              </Link>
+            <div className="mt-14 grid gap-5 md:grid-cols-3">
+              {features.map((feature) => (
+                <article key={feature.title} className="rounded-lg border-2 border-black bg-white p-6">
+                  <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-md bg-black">
+                    <Image src="/Logo4.png" alt="" width={28} height={28} className="rounded" />
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tighter">{feature.title}</h3>
+                  <p className="mt-4 font-semibold leading-relaxed text-zinc-600">{feature.text}</p>
+                </article>
+              ))}
             </div>
           </div>
-        </div>
-      </nav>
+        </section>
 
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Track Your Crypto Taxes
-            <span className="block text-primary-600">Effortlessly</span>
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            Know your P&L and tax liability in real-time, not during year-end panic. 
-            Auto-sync trades, calculate taxes, and export reports for your accountant.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link href="/dashboard" className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition shadow-lg">
-              Start Tracking Free
-            </Link>
-            <button className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-lg text-lg font-semibold hover:border-primary-600 hover:text-primary-600 transition">
-              See Demo
-            </button>
-          </div>
-        </div>
-
-        {/* Feature Cards */}
-        <div className="mt-20 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <FeatureCard 
-            icon="🔄"
-            title="Auto-Sync Exchanges"
-            description="Connect Binance, WazirX, and more. We fetch all your trades automatically."
-          />
-          <FeatureCard 
-            icon="📊"
-            title="Real-Time P&L"
-            description="See if you're profitable right now, not months later when filing taxes."
-          />
-          <FeatureCard 
-            icon="💰"
-            title="Tax Calculations"
-            description="Accurate capital gains calculation following India tax laws (30% VDA tax)."
-          />
-          <FeatureCard 
-            icon="📥"
-            title="Export Reports"
-            description="Generate ITR-2 format reports. Download CSV or send directly to your CA."
-          />
-        </div>
-
-        {/* How It Works */}
-        <div className="mt-32">
-          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-16">
-            How It Works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-12">
-            <Step 
-              number="1"
-              title="Connect Your Exchanges"
-              description="Add your exchange API keys (read-only). We support Binance, WazirX, CoinDCX and more."
-            />
-            <Step 
-              number="2"
-              title="Auto-Sync Transactions"
-              description="We fetch all your trading history automatically. Set it and forget it."
-            />
-            <Step 
-              number="3"
-              title="Track & Export"
-              description="View real-time P&L, tax estimates, and export reports whenever you need them."
-            />
-          </div>
-        </div>
-
-        {/* Pricing */}
-        <div className="mt-32">
-          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-16">
-            Simple Pricing
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <PricingCard 
-              name="Free"
-              price="₹0"
-              period="forever"
-              features={[
-                "Up to 100 transactions",
-                "1 exchange connection",
-                "Basic P&L tracking",
-                "CSV export"
-              ]}
-              buttonText="Start Free"
-              buttonVariant="secondary"
-            />
-            <PricingCard 
-              name="Trader"
-              price="₹4,000"
-              period="per year"
-              features={[
-                "Unlimited transactions",
-                "All exchanges supported",
-                "Tax calculations & reports",
-                "ITR-2 format export",
-                "Email support"
-              ]}
-              buttonText="Get Started"
-              buttonVariant="primary"
-              popular={true}
-            />
-            <PricingCard 
-              name="Pro"
-              price="₹8,000"
-              period="per year"
-              features={[
-                "Everything in Trader",
-                "Tax-loss harvesting tips",
-                "Portfolio analytics",
-                "Priority support",
-                "Accountant collaboration"
-              ]}
-              buttonText="Go Pro"
-              buttonVariant="secondary"
-            />
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="mt-32 bg-gradient-to-r from-primary-600 to-primary-400 rounded-2xl p-12 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Stop Stressing About Crypto Taxes
-          </h2>
-          <p className="text-xl text-primary-50 mb-8">
-            Join thousands of traders who track their P&L and taxes in real-time
-          </p>
-          <Link href="/dashboard" className="bg-white text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg inline-block">
-            Start Your Free Trial
-          </Link>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t mt-20 py-12 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4">CryptoTax</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Making crypto tax tracking simple for traders
-              </p>
+        <section className="px-4 py-24 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1fr]">
+            <div className="rounded-lg border-2 border-black bg-[#74e0ff] p-8">
+              <p className="text-sm font-black uppercase">Level up</p>
+              <h2 className="mt-4 text-5xl font-black leading-none tracking-tighter sm:text-7xl">
+                Capture deductions before they disappear.
+              </h2>
             </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="#" className="hover:text-primary-600">Features</a></li>
-                <li><a href="#" className="hover:text-primary-600">Pricing</a></li>
-                <li><a href="#" className="hover:text-primary-600">Exchanges</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Resources</h4>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="#" className="hover:text-primary-600">Documentation</a></li>
-                <li><a href="#" className="hover:text-primary-600">Tax Guide</a></li>
-                <li><a href="#" className="hover:text-primary-600">Blog</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                <li><a href="#" className="hover:text-primary-600">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary-600">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-primary-600">Disclaimer</a></li>
-              </ul>
+            <div className="space-y-4">
+              {faq.map(([question, answer]) => (
+                <details key={question} className="rounded-lg border-2 border-black bg-white p-5">
+                  <summary className="cursor-pointer text-xl font-black tracking-tighter">{question}</summary>
+                  <p className="mt-4 font-semibold leading-relaxed text-zinc-600">{answer}</p>
+                </details>
+              ))}
             </div>
           </div>
-          <div className="border-t mt-8 pt-8 text-center text-gray-600 dark:text-gray-400">
-            <p>© 2024 CryptoTax. All rights reserved. Not financial or tax advice. Consult a professional.</p>
+        </section>
+      </main>
+      <footer className="border-t-2 border-black bg-black px-4 py-10 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <Image src="/Logo4.png" alt="Trader OS" width={44} height={44} className="rounded-md" />
+            <p className="text-2xl font-black tracking-tighter">Trader OS.</p>
+          </div>
+          <div className="flex flex-wrap gap-4 text-sm font-black uppercase text-white/70">
+            <Link href="/dashboard">Dashboard</Link>
+            <Link href="/dashboard/filing-center">Tax filing</Link>
+            <Link href="/csv/upload">CSV upload</Link>
           </div>
         </div>
       </footer>
+      <AdaptiveAuthButton />
     </div>
-  )
-}
-
-function FeatureCard({ icon, title, description }) {
-  return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition">
-      <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300">{description}</p>
-    </div>
-  )
-}
-
-function Step({ number, title, description }) {
-  return (
-    <div className="text-center">
-      <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-        {number}
-      </div>
-      <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300">{description}</p>
-    </div>
-  )
-}
-
-function PricingCard({ name, price, period, features, buttonText, buttonVariant, popular }) {
-  return (
-    <div className={`bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg ${popular ? 'ring-2 ring-primary-600 relative' : ''}`}>
-      {popular && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-            Most Popular
-          </span>
-        </div>
-      )}
-      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{name}</h3>
-      <div className="mb-6">
-        <span className="text-4xl font-bold text-gray-900 dark:text-white">{price}</span>
-        <span className="text-gray-600 dark:text-gray-400 ml-2">/ {period}</span>
-      </div>
-      <ul className="space-y-3 mb-8">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start">
-            <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-600 dark:text-gray-300">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Link 
-        href="/dashboard"
-        className={`block w-full text-center py-3 rounded-lg font-semibold transition ${
-          buttonVariant === 'primary' 
-            ? 'bg-primary-600 text-white hover:bg-primary-700' 
-            : 'border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-600 hover:text-primary-600'
-        }`}
-      >
-        {buttonText}
-      </Link>
-    </div>
-  )
+  );
 }

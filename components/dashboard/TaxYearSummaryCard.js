@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Lock, ArrowRight, Sparkles } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import {
     Select,
@@ -10,6 +13,7 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const COUNTRY_CURRENCY = {
     INDIA: "₹",
@@ -20,12 +24,17 @@ const COUNTRY_CURRENCY = {
 };
 
 export default function TaxYearSummaryCard() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [country, setCountry] = useState("INDIA");
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const isAuthenticated = status === "authenticated";
+
     useEffect(() => {
+        if (!isAuthenticated) return;
         const fetchSummary = async () => {
             try {
                 setLoading(true);
@@ -43,15 +52,50 @@ export default function TaxYearSummaryCard() {
         };
 
         fetchSummary();
-    }, [country, year]);
+    }, [country, year, isAuthenticated]);
 
     const currency = COUNTRY_CURRENCY[country] || "₹";
     const formatMoney = (num) => `${currency}${Number(num || 0).toFixed(2)}`;
 
-    if (loading || !summary) {
+    if (status === "loading") {
         return (
             <Card className="flex h-full min-h-[300px] items-center justify-center rounded-lg border-2 border-black bg-white py-0 text-black shadow-[6px_6px_0_#111]">
                 <CardContent className="p-6 font-black">Loading tax summary...</CardContent>
+            </Card>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <Card className="group relative h-full min-h-[350px] overflow-hidden rounded-lg border-2 border-black bg-[#f4f4f0] py-0 text-black shadow-[6px_6px_0_#111]">
+                <CardContent className="flex h-full flex-col items-center justify-center p-8 text-center">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-black bg-white shadow-[4px_4px_0_#111]">
+                        <Sparkles className="h-7 w-7" />
+                    </div>
+                    <div className="space-y-3">
+                        <h2 className="text-3xl font-black uppercase leading-tight tracking-tighter">
+                            Check gains for free.
+                        </h2>
+                        <p className="max-w-[240px] text-sm font-bold leading-tight text-zinc-600">
+                            Login to scan your exchange data and calculate your realized tax position instantly.
+                        </p>
+                        <Button 
+                            onClick={() => router.push("/login")}
+                            className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-black px-8 text-xs font-black uppercase text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+                        >
+                            Sign in now
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!summary) {
+        return (
+            <Card className="flex h-full min-h-[300px] items-center justify-center rounded-lg border-2 border-black bg-white py-0 text-black shadow-[6px_6px_0_#111]">
+                <CardContent className="p-6 font-black text-zinc-500">No data available.</CardContent>
             </Card>
         );
     }

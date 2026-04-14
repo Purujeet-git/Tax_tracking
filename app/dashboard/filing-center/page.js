@@ -1,11 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BadgeCheck, CalendarDays, Download, FileText, Globe, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeCheck, CalendarDays, Download, FileText, Globe, Lock, ShieldCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
+const IS_LAUNCH_FREE = true; // Launch offer: PDF/CSV downloads are free
 
 const REGIONS = [
     {
@@ -161,15 +165,19 @@ function renderSummaryTiles(region, summary) {
 }
 
 export default function FilingCenterPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [regionId, setRegionId] = useState("INDIA");
     const [year, setYear] = useState(() => getLatestCompletedYear("INDIA"));
     const [downloadLoading, setDownloadLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(null);
     const [summary, setSummary] = useState(null);
     const [previewRows, setPreviewRows] = useState([]);
-    const [paid, setPaid] = useState(false);
+    const [paid, setPaid] = useState(IS_LAUNCH_FREE);
     const [summaryLoading, setSummaryLoading] = useState(false);
     const region = REGIONS.find((r) => r.id === regionId);
+
+    const isAuthenticated = status === "authenticated";
 
     const handleRegionChange = (newRegionId) => {
         setRegionId(newRegionId);
@@ -177,6 +185,7 @@ export default function FilingCenterPage() {
     };
 
     const fetchSummary = useCallback(async () => {
+        if (!isAuthenticated) return;
         setSummaryLoading(true);
         setSummary(null);
         setPreviewRows([]);
@@ -187,7 +196,7 @@ export default function FilingCenterPage() {
                 const json = await res.json();
                 setSummary(json.summary);
                 setPreviewRows(json.rows || []);
-                setPaid(Boolean(json.paid));
+                setPaid(IS_LAUNCH_FREE ? true : Boolean(json.paid));
             }
         } catch (e) {
             console.error("Summary fetch failed:", e);
@@ -312,6 +321,15 @@ export default function FilingCenterPage() {
                     Dashboard
                 </Link>
 
+                {IS_LAUNCH_FREE && (
+                    <section className="animate-in fade-in slide-in-from-top-4 duration-700 rounded-lg border-2 border-black bg-[#9dff7a] p-4 text-center shadow-[6px_6px_0_#111]">
+                        <p className="flex items-center justify-center gap-2 text-sm font-black uppercase">
+                            <Sparkles className="h-4 w-4" />
+                            Launch Offer: All reports are free for a limited time. Use our service to see the accuracy for yourself and build your trust in Trader OS.
+                        </p>
+                    </section>
+                )}
+
                 <section className="grid gap-6 rounded-lg border-2 border-black bg-[#f4f4f0] p-6 shadow-[10px_10px_0_#111] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
                     <div>
                         <p className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-[#74e0ff] px-4 py-2 text-xs font-black uppercase">
@@ -383,7 +401,15 @@ export default function FilingCenterPage() {
                     </div>
                 </section>
 
-                {summaryLoading ? (
+                {status === "unauthenticated" ? (
+                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="flex h-24 items-center justify-center rounded-lg border-2 border-black bg-[#f4f4f0] p-4 shadow-[5px_5px_0_#111]">
+                                <Lock className="h-5 w-5 text-black/20" />
+                            </div>
+                        ))}
+                    </div>
+                ) : (summaryLoading || status === "loading") ? (
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                         {[...Array(4)].map((_, i) => (
                             <div key={i} className="h-24 animate-pulse rounded-lg border-2 border-black bg-[#f4f4f0]" />
@@ -396,7 +422,7 @@ export default function FilingCenterPage() {
                 ) : null}
 
                 <section
-                    className="rounded-lg border-2 border-black bg-white p-5 shadow-[6px_6px_0_#111]"
+                    className="relative overflow-hidden rounded-lg border-2 border-black bg-white p-5 shadow-[6px_6px_0_#111]"
                     onCopy={(e) => e.preventDefault()}
                     onCut={(e) => e.preventDefault()}
                     onContextMenu={(e) => e.preventDefault()}
@@ -423,7 +449,27 @@ export default function FilingCenterPage() {
                     </div>
 
                     <div className="mt-5 max-h-[430px] overflow-auto rounded-lg border-2 border-black select-none">
-                        {previewColumns.length ? (
+                        {status === "unauthenticated" ? (
+                            <div className="flex h-[300px] flex-col items-center justify-center space-y-4 bg-[#f4f4f0] p-8 text-center">
+                                <Lock className="h-12 w-12 text-black" />
+                                <div className="max-w-md">
+                                    <p className="text-2xl font-black uppercase tracking-tighter">Preview Locked</p>
+                                    <p className="mt-2 font-bold text-zinc-600">Login to preview your filing rows and unlock the export package.</p>
+                                    <Button 
+                                        onClick={() => router.push("/login")}
+                                        className="mt-4 h-11 rounded-full bg-black px-6 text-xs font-black uppercase text-white hover:bg-zinc-800"
+                                    >
+                                        Sign In to View
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (summaryLoading || status === "loading") ? (
+                            <div className="flex h-[300px] flex-col items-center justify-center space-y-4 bg-[#f4f4f0] p-8">
+                                <div className="h-12 w-12 animate-spin rounded-full border-4 border-black border-t-transparent" />
+                                <p className="font-black uppercase tracking-tighter">Loading secure preview...</p>
+                            </div>
+                        ) : previewColumns.length ? (
                             <table className="w-full min-w-[900px] border-collapse text-sm">
                                 <thead className="sticky top-0 bg-black text-white">
                                     <tr>
@@ -452,27 +498,22 @@ export default function FilingCenterPage() {
                             </div>
                         )}
                     </div>
-                    {previewRows.length > 100 && (
-                        <p className="mt-3 text-xs font-semibold text-zinc-500">Showing first 100 rows. The paid CSV includes the full dataset.</p>
-                    )}
                 </section>
 
                 <section className="grid gap-5 md:grid-cols-2">
                     <ExportCard
-                        title="Unlock export package"
-                        text="Pay once for this region and tax year, then download the PDF and CSV together."
-                        tags={["Stripe", "Razorpay", "PDF + CSV", region.subtitle]}
-                        icon={FileText}
-                        buttonText={paid ? "Package unlocked" : paymentLoading ? "Opening checkout..." : "Pay to unlock downloads"}
-                        onStripe={startStripeCheckout}
-                        onRazorpay={startRazorpayCheckout}
-                        disabled={paid || Boolean(paymentLoading)}
+                        title="Launch period access"
+                        text={IS_LAUNCH_FREE ? "Generation is currently free for all regions during our launch period." : "Pay once for this region and tax year, then download the PDF and CSV together."}
+                        tags={IS_LAUNCH_FREE ? ["Free Access", "Limited Time", "No Payment Required"] : ["Stripe", "Razorpay", "PDF + CSV", region.subtitle]}
+                        icon={BadgeCheck}
+                        buttonText={paid ? "Feature unlocked" : status === "loading" ? "Verifying..." : "Sign in to unlock"}
+                        disabled={paid}
                         primary
                     />
                     <ExportCard
                         title="Download both files"
                         text="The PDF report and raw CSV are generated from the verified preview data."
-                        tags={["Simultaneous", "Paid Access", "Review Ready", "Accountant Export"]}
+                        tags={["Simultaneous", "Free Launch Access", "Review Ready", "Accountant Export"]}
                         icon={Download}
                         buttonText={downloadLoading ? "Preparing files..." : "Download PDF and CSV"}
                         onClick={downloadPackage}
@@ -511,7 +552,7 @@ function ExportCard({ title, text, tags, icon: Icon, buttonText, onClick, onStri
                         ))}
                     </div>
                 </div>
-                {onStripe || onRazorpay ? (
+                {!IS_LAUNCH_FREE && (onStripe || onRazorpay) ? (
                     <div className="mt-8 grid gap-2 sm:grid-cols-2">
                         <Button
                             onClick={onStripe}

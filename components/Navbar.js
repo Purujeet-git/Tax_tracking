@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { Sparkles } from "lucide-react";
 
 const navItems = [
   { name: "Tax", href: "/dashboard/filing-center" },
@@ -9,11 +13,18 @@ const navItems = [
 ];
 
 export default function Navbar() {
+  const { data: session } = useSession();
+  const IS_LAUNCH_FREE = true;
+
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-black bg-white/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
+    <>
+    <div className="bg-black py-2 text-center text-[10px] font-black uppercase tracking-[0.2em] text-white">
+      🚀 Launch Offer: PDF & CSV exports are free for a limited time to build your trust.
+    </div>
+      <header className="sticky top-0 z-50 border-b-2 border-black bg-white/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          <Image src="/Logo4.png" height={42} width={42} alt="Trader OS" className="rounded-md" />
+          <Image src="/TraderOS_Logo_Final.png" height={42} width={42} alt="Trader OS" className="rounded-md" />
           <span className="text-2xl font-black tracking-tighter">Trader OS.</span>
         </Link>
 
@@ -29,13 +40,21 @@ export default function Navbar() {
           ))}
         </div>
 
-        <Link
-          href="/login"
-          className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-black px-5 text-sm font-black uppercase text-white transition hover:bg-zinc-800"
-        >
-          Login
-        </Link>
+        <div className="flex items-center gap-4">
+          {session?.user?.name && (
+            <p className="hidden text-sm font-black uppercase tracking-tighter sm:block">
+              Welcome, <span className="text-[#35c96e]">{session.user.name.split(" ")[0]}</span>
+            </p>
+          )}
+          <Link
+            href="/login"
+            className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-black px-5 text-sm font-black uppercase text-white transition hover:bg-zinc-800"
+          >
+            {session ? "Account" : "Login"}
+          </Link>
+        </div>
       </nav>
     </header>
+    </>
   );
 }

@@ -133,7 +133,7 @@ export default function Hero() {
                     
                     <div ref={logoRef} className="flex items-center justify-center overflow-hidden mx-4">
                         <Image 
-                            src={'/Logo4.png'} 
+                            src={'/TraderOS_Logo_Final.png'} 
                             className="rounded-xl shadow-2xl" 
                             height={120} 
                             width={120} 

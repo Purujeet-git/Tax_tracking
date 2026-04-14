@@ -1,10 +1,32 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import UniversalCsvMapper from "@/components/dashboard/UniversalCsvMapper";
 
 export default function CsvMapperPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    const isAuthenticated = status === "authenticated";
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/login");
+        }
+    }, [status, router]);
+
+    if (status === "loading" || !isAuthenticated) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-white">
+                <Loader2 className="h-10 w-10 animate-spin text-black" />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-white px-4 py-6 text-black sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl space-y-8">

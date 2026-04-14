@@ -206,7 +206,7 @@ export default function Home() {
               {features.map((feature) => (
                 <article key={feature.title} className="rounded-lg border-2 border-black bg-white p-6">
                   <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-md bg-black">
-                    <Image src="/Logo4.png" alt="" width={28} height={28} className="rounded" />
+                    <Image src="/TraderOS_Logo_Final.png" alt="" width={28} height={28} className="rounded" />
                   </div>
                   <h3 className="text-2xl font-black tracking-tighter">{feature.title}</h3>
                   <p className="mt-4 font-semibold leading-relaxed text-zinc-600">{feature.text}</p>
@@ -238,7 +238,7 @@ export default function Home() {
       <footer className="border-t-2 border-black bg-black px-4 py-10 text-white sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/Logo4.png" alt="Trader OS" width={44} height={44} className="rounded-md" />
+            <Image src="/TraderOS_Logo_Final.png" alt="Trader OS" width={44} height={44} className="rounded-md" />
             <p className="text-2xl font-black tracking-tighter">Trader OS.</p>
           </div>
           <div className="flex flex-wrap gap-4 text-sm font-black uppercase text-white/70">

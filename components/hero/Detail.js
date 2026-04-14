@@ -87,7 +87,7 @@ const Detail = () => {
                 >
                     <div className="p-12 rounded-[50px] bg-slate-50 border-2 border-slate-100 flex items-center justify-center shadow-inner">
                         <Image 
-                            src={'/Logo4.png'} 
+                            src={'/TraderOS_Logo_Final.png'} 
                             height={240} 
                             width={240} 
                             alt='Trader OS Logo'

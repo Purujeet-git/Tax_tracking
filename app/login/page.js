@@ -46,9 +46,12 @@ export default function LoginPage() {
                         TAKE <br />
                         CONTROL.
                     </h1>
-                    <p className="text-zinc-600 font-bold mb-10 uppercase tracking-tight text-sm leading-tight">
+                    <p className="text-zinc-600 font-bold mb-6 uppercase tracking-tight text-sm leading-tight">
                         Every exchange in one <br />clean portfolio ledger.
                     </p>
+                    <div className="mb-10 rounded-md border-2 border-dashed border-black bg-[#ffdf5d] p-4 text-xs font-black uppercase leading-tight">
+                        Login to continue to the website so that you are able to use our website freely.
+                    </div>
                 </div>
 
                 <button 

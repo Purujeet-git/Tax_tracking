@@ -1,24 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Lock, ArrowRight, History } from "lucide-react";
 
 export default function TradeHistoryCard() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [trades, setTrades] = useState([]);
     const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    const isAuthenticated = status === "authenticated";
 
     useEffect(() => {
-        const fetchTrades = async () => {
-            const res = await fetch("/api/trades/history");
-            const data = await res.json();
+        if (!isAuthenticated) return;
 
-            if (data.success) {
-                setTrades(data.trades);
+        const fetchTrades = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch("/api/trades/history");
+                const data = await res.json();
+
+                if (data.success) {
+                    setTrades(data.trades);
+                }
+            } catch (err) {
+                console.error("Failed to fetch trade history", err);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchTrades();
-    }, []);
+    }, [isAuthenticated]);
 
     const filteredTrades = trades.filter((trade) => {
         const query = search.toLowerCase();
@@ -31,6 +49,41 @@ export default function TradeHistoryCard() {
     });
 
     const formatMoney = (num) => `₹${Number(num || 0).toFixed(2)}`;
+
+    if (status === "loading") {
+        return (
+            <Card className="flex h-full min-h-[400px] items-center justify-center rounded-lg border-2 border-black bg-white py-0 text-black shadow-[6px_6px_0_#111]">
+                <CardContent className="p-6 font-black">Loading trade history...</CardContent>
+            </Card>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <Card className="group relative h-full min-h-[400px] overflow-hidden rounded-lg border-2 border-black bg-[#f4f4f0] py-0 text-black shadow-[6px_6px_0_#111]">
+                <CardContent className="flex h-full flex-col items-center justify-center p-8 text-center">
+                    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-black bg-white shadow-[4px_4px_0_#111]">
+                        <History className="h-10 w-10" />
+                    </div>
+                    <div className="max-w-md space-y-4">
+                        <h2 className="text-4xl font-black uppercase leading-tight tracking-tighter">
+                            Ledger is private.
+                        </h2>
+                        <p className="text-lg font-bold leading-tight text-zinc-600">
+                            Sign in to review your complete transaction history and audit disposal logic for free.
+                        </p>
+                        <Button 
+                            onClick={() => router.push("/login")}
+                            className="mt-6 inline-flex h-14 items-center justify-center rounded-full bg-black px-10 text-sm font-black uppercase text-white transition hover:-translate-y-1 hover:bg-zinc-800"
+                        >
+                            Review my trades
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="h-full max-h-[640px] rounded-lg border-2 border-black bg-white py-0 text-black shadow-[6px_6px_0_#111]">

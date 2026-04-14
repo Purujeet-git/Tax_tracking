@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -98,6 +100,8 @@ function ResultPill({ label, value, tone = "neutral" }) {
 }
 
 export default function TaxToolsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [plan, setPlan] = useState(null);
   const [planLoading, setPlanLoading] = useState(true);
   const [asset, setAsset] = useState("BTC");
@@ -109,7 +113,16 @@ export default function TaxToolsPage() {
   const [engineResult, setEngineResult] = useState(null);
   const [error, setError] = useState(null);
 
+  const isAuthenticated = status === "authenticated";
+
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const loadPlan = async () => {
       try {
         setPlanLoading(true);
@@ -245,6 +258,14 @@ export default function TaxToolsPage() {
       strategy: "FIFO",
     });
   };
+
+  if (status === "loading" || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <Loader2 className="h-10 w-10 animate-spin text-black" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white px-4 py-6 text-black sm:px-6 lg:px-8">

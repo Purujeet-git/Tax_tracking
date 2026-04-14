@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
-import { RefreshCcw, KeyRound, CheckCircle2 } from "lucide-react";
+import { RefreshCcw, KeyRound, CheckCircle2, Lock, ArrowRight } from "lucide-react";
 
 export default function ExchangeConnectionsCard() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [connections, setConnections] = useState([]);
     const [exchange, setExchange] = useState("BINANCE");
     const [apiKey, setApiKey] = useState("");
@@ -16,8 +20,7 @@ export default function ExchangeConnectionsCard() {
     const [loading, setLoading] = useState(false);
     const [syncLoading, setSyncLoading] = useState(null);
 
-    // KuCoin requires a 3rd field — detect it dynamically
-    const needsPassphrase = exchange === "KUCOIN";
+    const isAuthenticated = status === "authenticated";
 
     const fetchConnections = async () => {
         const res = await fetch("/api/exchange-connection");
@@ -28,6 +31,8 @@ export default function ExchangeConnectionsCard() {
     };
 
     useEffect(() => {
+        if (!isAuthenticated) return;
+
         let cancelled = false;
 
         const loadConnections = async () => {
@@ -44,7 +49,9 @@ export default function ExchangeConnectionsCard() {
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [isAuthenticated]);
+
+    const needsPassphrase = exchange === "KUCOIN";
 
     const handleSaveConnection = async () => {
         if (!apiKey || !secret) return alert("Keys are required to connect an exchange securely.");
@@ -117,6 +124,37 @@ export default function ExchangeConnectionsCard() {
             alert("Failed to disconnect exchange.");
         }
     };
+
+    if (!isAuthenticated) {
+        return (
+            <Card className="group relative h-full min-h-[400px] overflow-hidden rounded-lg border-2 border-black bg-[#f4f4f0] py-0 text-black shadow-[6px_6px_0_#111]">
+                <CardContent className="flex h-full flex-col items-center justify-center p-8 text-center">
+                    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-black bg-white shadow-[4px_4px_0_#111]">
+                        <Lock className="h-10 w-10" />
+                    </div>
+                    <div className="max-w-md space-y-4">
+                        <h2 className="text-4xl font-black uppercase leading-tight tracking-tighter">
+                            Vault is locked.
+                        </h2>
+                        <p className="text-lg font-bold leading-tight text-zinc-600">
+                            Login to import exchanges, secure your API keys, and track your global tax position in real-time.
+                        </p>
+                        <Button 
+                            onClick={() => router.push("/login")}
+                            className="mt-6 inline-flex h-14 items-center justify-center rounded-full bg-black px-10 text-sm font-black uppercase text-white transition hover:-translate-y-1 hover:bg-zinc-800"
+                        >
+                            Login to vault
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                    
+                    {/* Decorative Background Elements */}
+                    <div className="absolute -bottom-10 -right-10 h-40 w-40 rotate-12 bg-black/5 blur-3xl" />
+                    <div className="absolute -left-10 -top-10 h-40 w-40 -rotate-12 bg-black/5 blur-3xl" />
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="h-full max-h-[560px] rounded-lg border-2 border-black bg-white py-0 text-black shadow-[6px_6px_0_#111]">
